@@ -1,0 +1,7 @@
+[Core]
+Name = GitBot
+Module = gitBot
+
+[Documentation]
+Description = Some tools to follow your git repositories
+

@@ -41,7 +41,7 @@ class GitBot(BotPlugin):
                     logging.debug('Send:\n%s' % history_msg)
                     self.send(room, 'Incoming git changes ...\n' + history_msg, message_type='groupchat')
 
-            self.t = Timer(5.0, self.git_poller)
+            self.t = Timer(POLLING_TIME, self.git_poller)
             self.t.setDaemon(True) # so it is not locking on exit
             self.t.start()
 

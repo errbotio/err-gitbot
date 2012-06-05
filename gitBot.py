@@ -111,7 +111,7 @@ class GitBot(BotPlugin):
         """
         if not self.shelf:
             return 'You have no entry, please use !follow to add some'
-        return '\nYou are currently following those repos:\n'.join(['\n%s:\n%s' % (human_name, '\t\n'.join([pair[0] for pair in current_entry])) for (human_name, current_entry) in self.shelf.iteritems()])
+        return '\nYou are currently following those repos:\n' + ('\n'.join(['\n%s:\n%s' % (human_name, '\t\n'.join([pair[0] for pair in current_entry])) for (human_name, current_entry) in self.shelf.iteritems()]))
 
     def callback_connect(self):
         logging.info('Callback_connect')

@@ -42,7 +42,7 @@ class GitBot(BotPlugin):
                 for room in CHATROOM_PRESENCE:
                     self.send(room, '/me is about to give you the latest git repo news ...', message_type='groupchat')
                     for repo, changes in history_msgs.iteritems():
-                        msg = '\n' + ('%s:\n' % repo) + '\n' + changes
+                        msg = ('%s:\n' % repo) + changes
                         logging.debug('Send:\n%s' % msg)
                         self.send(room, msg, message_type='groupchat')
 

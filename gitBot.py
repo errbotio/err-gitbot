@@ -31,8 +31,8 @@ class GitBot(BotPlugin):
                 for head in initial_state_dict:
                     if initial_state_dict[head] != new_state_dict[head]:
                         logging.debug('%s: %s -> %s' % (head, initial_state_dict[head].encode("hex"), new_state_dict[head].encode("hex")))
-                        history_msg += '\tBranch ' + head + ':\n'
-                        history_msg += '\t\t'.join(git_log(history_since_rev(human_name, initial_state)))
+                        history_msg += '\tBranch ' + head + ':'
+                        history_msg += '\n\t\t'.join(git_log(history_since_rev(human_name, initial_state)))
                         new_stuff = True
                 if new_stuff:
                     history_msgs[human_name] = history_msg
@@ -40,9 +40,9 @@ class GitBot(BotPlugin):
                 self.shelf.sync()
             if history_msgs:
                 for room in CHATROOM_PRESENCE:
-                    self.send(room, '/me is about to give you the latest git repo news ...\n')
+                    self.send(room, '/me is about to give you the latest git repo news ...', message_type='groupchat')
                     for repo, changes in history_msgs.iteritems():
-                        msg = '\n' + ('%s:\n' % repo) + ''.join(changes)
+                        msg = '\n' + ('%s:\n' % repo) + '\n'.join(changes)
                         logging.debug('Send:\n%s' % msg)
                         self.send(room, msg, message_type='groupchat')
 

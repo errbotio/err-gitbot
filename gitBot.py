@@ -31,15 +31,16 @@ class GitBot(BotPlugin):
                 for head in initial_state_dict:
                     if initial_state_dict[head] != new_state_dict[head]:
                         logging.debug('%s: %s -> %s' % (head, initial_state_dict[head].encode("hex"), new_state_dict[head].encode("hex")))
-                        history_msg += '\tBranch ' + head + ':\n\t\t'
-                        history_msg += '\n\t\t'.join(git_log(history_since_rev(human_name, initial_state)))
+                        history_msg += '  Branch ' + head + ':\n    '
+                        history_msg += '\n    '.join(git_log(history_since_rev(human_name, initial_state)))
                         new_stuff = True
                 if new_stuff:
                     history_msgs[human_name] = history_msg
                 self.shelf[human_name] = [(head, sha) for head, sha in new_state_dict.items() if head in initial_state_dict]
                 self.shelf.sync()
             if history_msgs:
-                for room in CHATROOM_PRESENCE:
+                if CHATROOM_PRESENCE:
+                    room = CHATROOM_PRESENCE[0]
                     self.send(room, '/me is about to give you the latest git repo news ...', message_type='groupchat')
                     for repo, changes in history_msgs.iteritems():
                         msg = ('%s:\n' % repo) + changes
@@ -129,7 +130,7 @@ class GitBot(BotPlugin):
         if not self.shelf:
             return 'You have no entry, please use !follow to add some'
         return '\nYou are currently following those repos:\n' + (
-        '\n'.join(['\n%s:\n%s' % (human_name, '\t\n'.join([pair[0] for pair in current_entry])) for (human_name, current_entry) in self.shelf.iteritems()]))
+            '\n'.join(['\n%s:\n%s' % (human_name, '\t\n'.join([pair[0] for pair in current_entry])) for (human_name, current_entry) in self.shelf.iteritems()]))
 
     def callback_connect(self):
         logging.info('Callback_connect')

@@ -31,7 +31,7 @@ class GitBot(BotPlugin):
                 for head in initial_state_dict:
                     if initial_state_dict[head] != new_state_dict[head]:
                         logging.debug('%s: %s -> %s' % (head, initial_state_dict[head].encode("hex"), new_state_dict[head].encode("hex")))
-                        history_msg += '\tBranch ' + head + ':'
+                        history_msg += '\tBranch ' + head + ':\n\t\t'
                         history_msg += '\n\t\t'.join(git_log(history_since_rev(human_name, initial_state)))
                         new_stuff = True
                 if new_stuff:

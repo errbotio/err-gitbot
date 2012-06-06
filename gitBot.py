@@ -31,10 +31,13 @@ class GitBot(BotPlugin):
                 for head in initial_state_dict:
                     if initial_state_dict[head] != new_state_dict[head]:
                         logging.debug('%s: %s -> %s' % (head, initial_state_dict[head].encode("hex"), new_state_dict[head].encode("hex")))
-                        history_msg += '  Branch ' + head + ':\n    '
-                        history_msg += '\n    '.join(git_log(history_since_rev(human_name, initial_state)))
                         new_stuff = True
+
                 if new_stuff:
+                    log = git_log(history_since_rev(human_name, initial_state))
+                    for head in log:
+                        history_msg += '  Branch ' + head + ':\n    '
+                        history_msg += '\n    '.join(log[head]) + '\n'
                     history_msgs[human_name] = history_msg
                 self.shelf[human_name] = [(head, sha) for head, sha in new_state_dict.items() if head in initial_state_dict]
                 self.shelf.sync()

@@ -47,15 +47,21 @@ def get_heads_revisions(human_name):
 def history_since_rev(human_name, previous_heads_revisions):
     repo = Repo(human_to_path(human_name))
     heads = repo.heads
-    result = []
+    result = {}
     for head_name, previous_commit in previous_heads_revisions:
+        commit_list = []
         commit = heads[head_name].commit
         while commit.binsha != previous_commit:
-            result.append(commit)
+            commit_list.append(commit)
             logging.debug('%s' % commit.hexsha)
             commit = commit.parents[0]
+        result[head_name] = commit_list
     return result
 
-# Represents a list of commits as a log as a list of strings
-def git_log(commits):
-    return ["%s %20s %20s -- %s" % (commit.hexsha[:6], commit.author.name, datetime.fromtimestamp(commit.committed_date).isoformat() ,commit.summary) for commit in commits]
+# Represents a list of commits as a log as a dictionaru of list of strings
+def git_log(head_commits):
+    result = {}
+    for head in head_commits:
+        commits = head_commits[head]
+        result[head] = ["%s %20s %20s -- %s" % (commit.hexsha[:6], commit.author.name, datetime.fromtimestamp(commit.committed_date).isoformat() ,commit.summary) for commit in commits]
+    return result

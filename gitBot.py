@@ -15,6 +15,12 @@ class GitBot(BotPlugin):
     git_connected = False
     ggl = threading.Lock()
 
+    def program_next_poll(self):
+        self.t = Timer(POLLING_TIME, self.git_poller)
+        self.t.setDaemon(True) # so it is not locking on exit
+        self.t.start()
+
+
     def git_poller(self):
         with self.ggl:
             logging.debug('Poll the git repos')
@@ -51,9 +57,7 @@ class GitBot(BotPlugin):
                         logging.debug('Send:\n%s' % msg)
                         self.send(room, msg, message_type='groupchat')
 
-            self.t = Timer(POLLING_TIME, self.git_poller)
-            self.t.setDaemon(True) # so it is not locking on exit
-            self.t.start()
+            self.program_next_poll()
 
     def _git_follow_url(self, git_url, heads_to_follow):
         human_name = human_name_for_git_url(git_url)
@@ -141,4 +145,4 @@ class GitBot(BotPlugin):
         if not self.git_connected:
             self.git_connected = True
             logging.info('Start git poller')
-            self.git_poller()
+            self.program_next_poll()

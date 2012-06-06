@@ -36,8 +36,9 @@ class GitBot(BotPlugin):
                 if new_stuff:
                     log = git_log(history_since_rev(human_name, initial_state))
                     for head in log:
-                        history_msg += '  Branch ' + head + ':\n    '
-                        history_msg += '\n    '.join(log[head]) + '\n'
+                        if log[head]: # don't log the empty branches
+                            history_msg += '  Branch ' + head + ':\n    '
+                            history_msg += '\n    '.join(log[head]) + '\n'
                     history_msgs[human_name] = history_msg
                 self.shelf[human_name] = [(head, sha) for head, sha in new_state_dict.items() if head in initial_state_dict]
                 self.shelf.sync()

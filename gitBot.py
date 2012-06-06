@@ -84,15 +84,14 @@ class GitBot(BotPlugin):
         result = ''
         installed_plugin_repos = self.get_installed_plugin_repos()
         if git_name == 'allplugins':
-            for url in [url for name, url in installed_plugin_repos]:
-                result += self._git_follow_url(url, None) # follow everything
+            for url in [url for name, url in installed_plugin_repos.iteritems()]:
+                result = self._git_follow_url(url, None) # follow everything
             return result
         elif git_name in installed_plugin_repos:
             git_name = installed_plugin_repos[git_name] # transform the symbolic name to the url
 
         heads_to_follow = args[1:] if len(args) > 1 else None
-        result += self._git_follow_url(git_name, heads_to_follow)
-        return result
+        return self._git_follow_url(git_name, heads_to_follow)
 
     @botcmd
     def unfollow(self, mess, args):

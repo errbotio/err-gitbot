@@ -18,47 +18,39 @@ class GitBot(BotPlugin):
     def git_poller(self):
         with self.ggl:
             logging.debug('Poll the git repos')
-            history_msg = ''
-            new_stuff = False
+            history_msgs = {}
+
             for human_name in self.shelf:
                 initial_state = self.shelf[human_name]
                 initial_state_dict = dict(initial_state)
                 logging.debug('fetch all heads of %s... ' % human_name)
                 fetch_all_heads(human_name)
                 new_state_dict = {head: rev for head, rev in get_heads_revisions(human_name)}
-                history_msg += human_name + ':\n'
+                history_msg = ''
+                new_stuff = False
                 for head in initial_state_dict:
                     if initial_state_dict[head] != new_state_dict[head]:
                         logging.debug('%s: %s -> %s' % (head, initial_state_dict[head].encode("hex"), new_state_dict[head].encode("hex")))
                         history_msg += '\tBranch ' + head + ':\n'
                         history_msg += '\t\t'.join(git_log(history_since_rev(human_name, initial_state)))
                         new_stuff = True
+                if new_stuff:
+                    history_msgs[human_name] = history_msg
                 self.shelf[human_name] = [(head, sha) for head, sha in new_state_dict.items() if head in initial_state_dict]
                 self.shelf.sync()
-
-            if new_stuff:
+            if history_msgs:
                 for room in CHATROOM_PRESENCE:
-                    logging.debug('Send:\n%s' % history_msg)
-                    self.send(room, 'Incoming git changes ...\n' + history_msg, message_type='groupchat')
+                    self.send(room, '/me is about to give you the latest git repo news ...\n')
+                    for repo, changes in history_msgs.iteritems():
+                        msg = '\n' + ('%s:\n' % repo) + ''.join(changes)
+                        logging.debug('Send:\n%s' % msg)
+                        self.send(room, msg, message_type='groupchat')
 
             self.t = Timer(POLLING_TIME, self.git_poller)
             self.t.setDaemon(True) # so it is not locking on exit
             self.t.start()
 
-    @botcmd
-    def follow(self, mess, args):
-        """ Follow the given git repository url and be notified when somebody commits something on it
-        The first argument is the url.
-        The next optional arguments are the heads to follow.
-        If no optional arguments are given, just follow all the heads
-        """
-        admin_only(mess)
-        args = args.strip().split(' ')
-        if len(args) < 1:
-            return 'You need at least a parameter'
-        git_url = args[0]
-        heads_to_follow = args[1:] if len(args) > 1 else None
-
+    def _git_follow_url(self, git_url, heads_to_follow):
         human_name = human_name_for_git_url(git_url)
         with self.ggl:
             if self.shelf.has_key(human_name):
@@ -75,6 +67,32 @@ class GitBot(BotPlugin):
 
             return self.following(None, None)
 
+    @botcmd
+    def follow(self, mess, args):
+        """ Follow the given git repository url and be notified when somebody commits something on it
+        The first argument is the git url.
+        The next optional arguments are the heads to follow.
+        If no optional arguments are given, just follow all the heads
+
+        You can alternatively put a name of a plugin or 'allplugins' to follow the changes of the installed r2 plugins.
+        """
+        admin_only(mess)
+        args = args.strip().split(' ')
+        if len(args) < 1:
+            return 'You need at least a parameter'
+        git_name = args[0]
+        result = ''
+        installed_plugin_repos = self.get_installed_plugin_repos()
+        if git_name == 'allplugins':
+            for url in [url for name, url in installed_plugin_repos]:
+                result += self._git_follow_url(url, None) # follow everything
+            return result
+        elif git_name in installed_plugin_repos:
+            git_name = installed_plugin_repos[git_name] # transform the symbolic name to the url
+
+        heads_to_follow = args[1:] if len(args) > 1 else None
+        result += self._git_follow_url(git_name, heads_to_follow)
+        return result
 
     @botcmd
     def unfollow(self, mess, args):
@@ -111,7 +129,8 @@ class GitBot(BotPlugin):
         """
         if not self.shelf:
             return 'You have no entry, please use !follow to add some'
-        return '\nYou are currently following those repos:\n' + ('\n'.join(['\n%s:\n%s' % (human_name, '\t\n'.join([pair[0] for pair in current_entry])) for (human_name, current_entry) in self.shelf.iteritems()]))
+        return '\nYou are currently following those repos:\n' + (
+        '\n'.join(['\n%s:\n%s' % (human_name, '\t\n'.join([pair[0] for pair in current_entry])) for (human_name, current_entry) in self.shelf.iteritems()]))
 
     def callback_connect(self):
         logging.info('Callback_connect')

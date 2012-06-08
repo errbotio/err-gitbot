@@ -9,7 +9,7 @@ from jabberbot import botcmd
 from gittools import clone, get_heads_revisions, fetch_all_heads, history_since_rev, git_log, remove_repo
 from utils import human_name_for_git_url
 
-POLLING_TIME = 10
+POLLING_TIME = 180
 
 class GitBot(BotPlugin):
     git_connected = False

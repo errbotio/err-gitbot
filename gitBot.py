@@ -22,44 +22,47 @@ class GitBot(BotPlugin):
 
 
     def git_poller(self):
-        with self.ggl:
-            logging.debug('Poll the git repos')
-            history_msgs = {}
+        try:
+            with self.ggl:
+                logging.debug('Poll the git repos')
+                history_msgs = {}
 
-            for human_name in self.shelf:
-                initial_state = self.shelf[human_name]
-                initial_state_dict = dict(initial_state)
-                logging.debug('fetch all heads of %s... ' % human_name)
-                fetch_all_heads(human_name)
-                new_state_dict = {head: rev for head, rev in get_heads_revisions(human_name)}
-                history_msg = ''
-                new_stuff = False
-                for head in initial_state_dict:
-                    if initial_state_dict[head] != new_state_dict[head]:
-                        logging.debug('%s: %s -> %s' % (head, initial_state_dict[head].encode("hex"), new_state_dict[head].encode("hex")))
-                        new_stuff = True
+                for human_name in self.shelf:
+                    initial_state = self.shelf[human_name]
+                    initial_state_dict = dict(initial_state)
+                    logging.debug('fetch all heads of %s... ' % human_name)
+                    fetch_all_heads(human_name)
+                    new_state_dict = {head: rev for head, rev in get_heads_revisions(human_name)}
+                    history_msg = ''
+                    new_stuff = False
+                    for head in initial_state_dict:
+                        if initial_state_dict[head] != new_state_dict[head]:
+                            logging.debug('%s: %s -> %s' % (head, initial_state_dict[head].encode("hex"), new_state_dict[head].encode("hex")))
+                            new_stuff = True
 
-                if new_stuff:
-                    log = git_log(history_since_rev(human_name, initial_state))
-                    for head in log:
-                        if log[head]: # don't log the empty branches
-                            history_msg += '  Branch ' + head + ':\n    '
-                            history_msg += '\n    '.join(log[head]) + '\n'
-                    history_msgs[human_name] = history_msg
-                logging.debug('Saving the shelf')
-                self.shelf[human_name] = [(head, sha) for head, sha in new_state_dict.items() if head in initial_state_dict]
-                self.shelf.sync()
-                logging.debug('Syncing the shelf')
-            if history_msgs:
-                if CHATROOM_PRESENCE:
-                    room = CHATROOM_PRESENCE[0]
-                    self.send(room, '/me is about to give you the latest git repo news ...', message_type='groupchat')
-                    for repo, changes in history_msgs.iteritems():
-                        msg = ('%s:\n' % repo) + changes
-                        logging.debug('Send:\n%s' % msg)
-                        self.send(room, msg, message_type='groupchat')
-        logging.debug('Program the next poll')
-        self.program_next_poll()
+                    if new_stuff:
+                        log = git_log(history_since_rev(human_name, initial_state))
+                        for head in log:
+                            if log[head]: # don't log the empty branches
+                                history_msg += '  Branch ' + head + ':\n    '
+                                history_msg += '\n    '.join(log[head]) + '\n'
+                        history_msgs[human_name] = history_msg
+                    logging.debug('Saving the shelf')
+                    self.shelf[human_name] = [(head, sha) for head, sha in new_state_dict.items() if head in initial_state_dict]
+                    self.shelf.sync()
+                    logging.debug('Syncing the shelf')
+                if history_msgs:
+                    if CHATROOM_PRESENCE:
+                        room = CHATROOM_PRESENCE[0]
+                        self.send(room, '/me is about to give you the latest git repo news ...', message_type='groupchat')
+                        for repo, changes in history_msgs.iteritems():
+                            msg = ('%s:\n' % repo) + changes
+                            logging.debug('Send:\n%s' % msg)
+                            self.send(room, msg, message_type='groupchat')
+            logging.debug('Program the next poll')
+            self.program_next_poll()
+        except Exception, e:
+            logging.error('poller exploded')
 
     def _git_follow_url(self, git_url, heads_to_follow):
         human_name = human_name_for_git_url(git_url)

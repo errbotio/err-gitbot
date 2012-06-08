@@ -46,8 +46,10 @@ class GitBot(BotPlugin):
                             history_msg += '  Branch ' + head + ':\n    '
                             history_msg += '\n    '.join(log[head]) + '\n'
                     history_msgs[human_name] = history_msg
+                logging.debug('Saving the shelf')
                 self.shelf[human_name] = [(head, sha) for head, sha in new_state_dict.items() if head in initial_state_dict]
                 self.shelf.sync()
+                logging.debug('Syncing the shelf')
             if history_msgs:
                 if CHATROOM_PRESENCE:
                     room = CHATROOM_PRESENCE[0]
@@ -56,8 +58,8 @@ class GitBot(BotPlugin):
                         msg = ('%s:\n' % repo) + changes
                         logging.debug('Send:\n%s' % msg)
                         self.send(room, msg, message_type='groupchat')
-
-            self.program_next_poll()
+        logging.debug('Program the next poll')
+        self.program_next_poll()
 
     def _git_follow_url(self, git_url, heads_to_follow):
         human_name = human_name_for_git_url(git_url)

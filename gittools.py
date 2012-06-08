@@ -1,7 +1,7 @@
 from datetime import datetime
 from git import *
-from errBot import PLUGIN_DIR
-from utils import human_name_for_git_url
+from errbot.errBot import PLUGIN_DIR
+from errbot.utils import human_name_for_git_url
 import os
 import logging
 import shutil

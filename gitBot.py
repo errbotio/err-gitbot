@@ -2,12 +2,12 @@
 import logging
 from threading import Timer
 import threading
-from botplugin import BotPlugin
+from errbot.botplugin import BotPlugin
 from config import CHATROOM_PRESENCE
-from errBot import admin_only
-from jabberbot import botcmd
+from errbot.errBot import admin_only
+from errbot.jabberbot import botcmd
 from gittools import clone, get_heads_revisions, fetch_all_heads, history_since_rev, git_log, remove_repo
-from utils import human_name_for_git_url
+from errbot.utils import human_name_for_git_url
 
 POLLING_TIME = 180
 

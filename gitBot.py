@@ -9,7 +9,7 @@ from jabberbot import botcmd
 from gittools import clone, get_heads_revisions, fetch_all_heads, history_since_rev, git_log, remove_repo
 from utils import human_name_for_git_url
 
-POLLING_TIME = 120
+POLLING_TIME = 10
 
 class GitBot(BotPlugin):
     git_connected = False
@@ -62,7 +62,7 @@ class GitBot(BotPlugin):
             logging.debug('Program the next poll')
             self.program_next_poll()
         except Exception, e:
-            logging.error('poller exploded')
+            logging.exception('poller exploded')
 
     def _git_follow_url(self, git_url, heads_to_follow):
         human_name = human_name_for_git_url(git_url)

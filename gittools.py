@@ -58,7 +58,10 @@ def history_since_rev(human_name, previous_heads_revisions):
         commit = heads[head_name].commit
         while commit.binsha != previous_commit:
             commit_list.append(commit)
-            commit = commit.parents[0]
+            if commit.parents:
+                commit = commit.parents[0]
+            else:
+                break
         result[head_name] = commit_list
     logging.debug('%s, found this history_since_rev %s' % (human_name, result))
     return result

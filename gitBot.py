@@ -4,7 +4,6 @@ from threading import Timer
 import threading
 from errbot.botplugin import BotPlugin
 from config import CHATROOM_PRESENCE
-from errbot.errBot import admin_only
 from errbot.jabberbot import botcmd
 from gittools import clone, get_heads_revisions, fetch_all_heads, history_since_rev, git_log, remove_repo
 from errbot.utils import human_name_for_git_url
@@ -81,7 +80,7 @@ class GitBot(BotPlugin):
 
             return self.following(None, None)
 
-    @botcmd
+    @botcmd(admin_only=True)
     def follow(self, mess, args):
         """ Follow the given git repository url and be notified when somebody commits something on it
         The first argument is the git url.
@@ -90,7 +89,6 @@ class GitBot(BotPlugin):
 
         You can alternatively put a name of a plugin or 'allplugins' to follow the changes of the installed r2 plugins.
         """
-        admin_only(mess)
         args = args.strip().split(' ')
         if len(args) < 1:
             return 'You need at least a parameter'
@@ -107,14 +105,13 @@ class GitBot(BotPlugin):
         heads_to_follow = args[1:] if len(args) > 1 else None
         return self._git_follow_url(git_name, heads_to_follow)
 
-    @botcmd
+    @botcmd(admin_only=True)
     def unfollow(self, mess, args):
         """ Unfollow the given git repository url or specific heads
         The first argument is the url.
         The next optional arguments are the heads to unfollow.
         If no optional arguments are given, just unfollow the repo completely
         """
-        admin_only(mess)
         args = args.strip().split(' ')
         if len(args) < 1:
             return 'You need a parameter'

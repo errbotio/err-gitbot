@@ -11,6 +11,7 @@ from errbot.utils import human_name_for_git_url
 POLLING_TIME = 180
 
 class GitBot(BotPlugin):
+    min_err_version = '1.2.2'
     git_connected = False
     ggl = threading.Lock()
 
@@ -80,8 +81,8 @@ class GitBot(BotPlugin):
 
             return self.following(None, None)
 
-    @botcmd(admin_only=True)
-    def follow(self, mess, args):
+    @botcmd(split_args_with = ' ', admin_only = True)
+    def git_follow(self, mess, args):
         """ Follow the given git repository url and be notified when somebody commits something on it
         The first argument is the git url.
         The next optional arguments are the heads to follow.
@@ -89,7 +90,6 @@ class GitBot(BotPlugin):
 
         You can alternatively put a name of a plugin or 'allplugins' to follow the changes of the installed r2 plugins.
         """
-        args = args.strip().split(' ')
         if len(args) < 1:
             return 'You need at least a parameter'
         git_name = args[0]
@@ -105,14 +105,13 @@ class GitBot(BotPlugin):
         heads_to_follow = args[1:] if len(args) > 1 else None
         return self._git_follow_url(git_name, heads_to_follow)
 
-    @botcmd(admin_only=True)
-    def unfollow(self, mess, args):
+    @botcmd(split_args_with = ' ', admin_only = True)
+    def git_unfollow(self, mess, args):
         """ Unfollow the given git repository url or specific heads
         The first argument is the url.
         The next optional arguments are the heads to unfollow.
         If no optional arguments are given, just unfollow the repo completely
         """
-        args = args.strip().split(' ')
         if len(args) < 1:
             return 'You need a parameter'
         human_name = str(args[0])
@@ -134,7 +133,7 @@ class GitBot(BotPlugin):
 
 
     @botcmd
-    def following(self, mess, args):
+    def git_following(self, mess, args):
         """ Just prints out which git repo the bot is following
         """
         if not self.shelf:

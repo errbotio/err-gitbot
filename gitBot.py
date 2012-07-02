@@ -79,7 +79,7 @@ class GitBot(BotPlugin):
             self.shelf[human_name] = current_entry
             self.shelf.sync()
 
-            return self.following(None, None)
+            return self.git_following(None, None)
 
     @botcmd(split_args_with = ' ', admin_only = True)
     def git_follow(self, mess, args):
@@ -124,12 +124,12 @@ class GitBot(BotPlugin):
             if heads_to_unfollow:
                 self.shelf[human_name] = [(head, sha) for head, sha in self.shelf[human_name] if head not in heads_to_unfollow]
                 self.shelf.sync()
-                return 'Heads %s have been removed from %s' % (','.join(heads_to_unfollow), human_name) + '\n\n' + self.following(None, None)
+                return 'Heads %s have been removed from %s' % (','.join(heads_to_unfollow), human_name) + '\n\n' + self.git_following(None, None)
 
             remove_repo(human_name)
             del(self.shelf[human_name])
             self.shelf.sync()
-            return ('%s has been removed.' % human_name) + '\n\n' + self.following(None, None)
+            return ('%s has been removed.' % human_name) + '\n\n' + self.git_following(None, None)
 
 
     @botcmd

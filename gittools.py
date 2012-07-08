@@ -69,6 +69,7 @@ def git_log(head_commits):
     result = {}
     for head in head_commits:
         commits = head_commits[head]
-        result[head] = ["%s %20s %20s -- %s" % (commit.hexsha[:6], commit.author.name, datetime.fromtimestamp(commit.committed_date).isoformat(), commit.summary) for commit in commits]
-        logging.debug('git log of %s: %s' % (head, result[head]))
+        logging.debug(u'git log of %s' % head)
+        result[head] = [u"%s %20s %20s -- %s" % (commit.hexsha[:6], commit.author.name, datetime.fromtimestamp(commit.committed_date).isoformat(), commit.summary) for commit in commits]
+        logging.debug(u'%s' % result[head])
     return result

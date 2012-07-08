@@ -6,7 +6,7 @@ from errbot.jabberbot import botcmd
 from gittools import clone, get_heads_revisions, fetch_all_heads, history_since_rev, git_log, remove_repo
 from errbot.utils import human_name_for_git_url
 
-POLLING_TIME = 10
+POLLING_TIME = 600
 
 class GitBot(BotPlugin):
     min_err_version = '1.4.0'

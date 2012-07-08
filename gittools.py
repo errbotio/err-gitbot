@@ -8,10 +8,8 @@ import shutil
 
 GIT_LOCAL_STORAGE = PLUGIN_DIR + os.sep + 'git_repos' + os.sep
 
-
 def human_to_path(human_name):
     return GIT_LOCAL_STORAGE + human_name
-
 
 def clone(url):
     human_name = human_name_for_git_url(url)
@@ -19,11 +17,9 @@ def clone(url):
     g.clone(url, human_to_path(human_name), bare=True)
     return human_name
 
-
 def remove_repo(human_name):
     path = human_to_path(human_name)
     shutil.rmtree(path)
-
 
 def fetch_all_heads(human_name):
     path = human_to_path(human_name)
@@ -48,25 +44,27 @@ def get_heads_revisions(human_name):
     heads = repo.heads
     return [(h.name, h.commit.binsha) for h in heads]
 
-
 def history_since_rev(human_name, previous_heads_revisions):
     repo = Repo(human_to_path(human_name))
     heads = repo.heads
     result = {}
     for head_name, previous_commit in previous_heads_revisions:
         commit_list = []
-        commit = heads[head_name].commit
-        while commit.binsha != previous_commit:
-            commit_list.append(commit)
-            if commit.parents:
-                commit = commit.parents[0]
-            else:
-                break
+        parent_commits = [heads[head_name].commit,]
+
+        while previous_commit not in (commit.binsha for commit in parent_commits):
+            new_parents = []
+            for commit in parent_commits:
+                commit_list.append(commit)
+                if commit.parents:
+                    new_parents.extend(commit.parents)
+            parent_commits = new_parents
+
         result[head_name] = commit_list
     logging.debug('%s, found this history_since_rev %s' % (human_name, result))
     return result
 
-# Represents a list of commits as a log as a dictionaru of list of strings
+# Represents a list of commits as a log as a dictionary of list of strings
 def git_log(head_commits):
     result = {}
     for head in head_commits:

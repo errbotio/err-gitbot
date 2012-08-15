@@ -4,17 +4,7 @@ from config import CHATROOM_PRESENCE
 from gittools import clone, get_heads_revisions, fetch_all_heads, history_since_rev, git_log, remove_repo
 from errbot.utils import human_name_for_git_url
 
-# Backward compatibility
-from errbot.version import VERSION
-from errbot.utils import version2array
-if version2array(VERSION) >= [1,6,0]:
-    from errbot import botcmd, BotPlugin
-else:
-    from errbot.botplugin import BotPlugin
-    from errbot.jabberbot import botcmd
-
-
-POLLING_TIME = 10
+POLLING_TIME = 600
 
 # Backward compatibility
 from errbot.version import VERSION

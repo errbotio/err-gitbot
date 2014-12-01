@@ -55,12 +55,12 @@ class GitBot(BotPlugin):
         super(GitBot, self).activate()
 
     def _git_follow_url(self, git_url, heads_to_follow):
-        human_name = human_name_for_git_url(git_url)
-        if self.has_key(human_name):
+        human_name = human_name_for_git_url(git_url).encode('utf-8')
+        if human_name in self:
             self.fetch_all_heads(human_name)
             current_entry = self[human_name]
         else:
-            human_name = self.clone(git_url)
+            human_name = self.clone(git_url).encode('utf-8')
             current_entry = []
 
         current_entry_dict = dict(current_entry)

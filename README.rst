@@ -5,6 +5,8 @@ For more information about err you can find it here: https://github.com/gbin/err
 
 **Installation**
 
+This plugin is only Python 2 compatible, pending the port of gitpython.
+
 *dependencies*
 
     pip install gitpython

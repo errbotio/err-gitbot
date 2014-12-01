@@ -171,7 +171,7 @@ class GitBot(BotPlugin):
         human_name = str(args[0])
         heads_to_unfollow = args[1:] if len(args) > 1 else None
 
-        if not self.has_key(human_name):
+        if human_name not in self:
             return 'I cannot find %s repos' % human_name
 
         if heads_to_unfollow:

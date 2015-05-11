@@ -12,6 +12,7 @@ from git import *
 import os
 import shutil
 
+
 class GitBot(BotPlugin):
     min_err_version = '1.7.0'
 
@@ -68,7 +69,6 @@ class GitBot(BotPlugin):
         self[human_name] = current_entry
         return self.git_following(None, None)
 
-
     def human_to_path(self, human_name):
         return os.path.join(self.plugin_dir, 'git_repos', human_name)
 
@@ -97,7 +97,6 @@ class GitBot(BotPlugin):
 
         logging.debug('result = %s' % result)
         return result
-
 
     def get_heads_revisions(self, human_name):
         path = self.human_to_path(human_name)
@@ -135,7 +134,7 @@ class GitBot(BotPlugin):
             logging.debug(u'%s' % result[head])
         return result
 
-    @botcmd(split_args_with = ' ', admin_only = True)
+    @botcmd(split_args_with=' ', admin_only=True)
     def git_follow(self, mess, args):
         """ Follow the given git repository url and be notified when somebody commits something on it
         The first argument is the git url.
@@ -150,16 +149,16 @@ class GitBot(BotPlugin):
         result = ''
         installed_plugin_repos = self.get_installed_plugin_repos()
         if git_name == 'allplugins':
-            for url in [url for name, url in installed_plugin_repos.iteritems()]:
-                result = self._git_follow_url(url, None) # follow everything
+            for url in [url for _, url in installed_plugin_repos.iteritems()]:
+                result = self._git_follow_url(url, None)  # follow everything
             return result
         elif git_name in installed_plugin_repos:
-            git_name = installed_plugin_repos[git_name] # transform the symbolic name to the url
+            git_name = installed_plugin_repos[git_name]  # transform the symbolic name to the url
 
         heads_to_follow = args[1:] if len(args) > 1 else None
         return self._git_follow_url(git_name, heads_to_follow)
 
-    @botcmd(split_args_with = ' ', admin_only = True)
+    @botcmd(split_args_with=' ', admin_only=True)
     def git_unfollow(self, mess, args):
         """ Unfollow the given git repository url or specific heads
         The first argument is the url.
@@ -181,7 +180,6 @@ class GitBot(BotPlugin):
         self.remove_repo(human_name)
         del(self[human_name])
         return ('%s has been removed.' % human_name) + '\n\n' + self.git_following(None, None)
-
 
     @botcmd
     def git_following(self, mess, args):

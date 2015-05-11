@@ -188,4 +188,4 @@ class GitBot(BotPlugin):
         if not self:
             return 'You have no entry, please use !git follow to add some'
         return '\nYou are currently following those repos:\n' + (
-            '\n'.join(['\n%s:\n%s' % (human_name, '\t\n'.join([pair[0] for pair in current_entry])) for (human_name, current_entry) in self.iteritems()]))
+            '\n'.join(['\n%s:\n%s' % (human_name, '\t\n'.join([pair[0] for pair in current_entry])) for (human_name, current_entry) in self.items()]))

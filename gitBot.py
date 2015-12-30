@@ -87,7 +87,7 @@ class GitBot(BotPlugin):
         g = Git(path)
         logging.debug('fetch_all_heads from %s' % path)
         remote_heads_string = g.ls_remote('origin', heads=True)
-        branches = [line.split('/')[-1] for line in remote_heads_string.split('\n')]
+        branches = ['/'.join(line.split('/')[2:]) for line in remote_heads_string.split('\n')]
         repo = Repo(path)
         origin = repo.remotes.origin
         result = []

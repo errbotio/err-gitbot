@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import binascii
 import logging
 from datetime import datetime
 from config import CHATROOM_PRESENCE
@@ -30,7 +31,7 @@ class GitBot(BotPlugin):
             new_stuff = False
             for head in initial_state_dict:
                 if initial_state_dict[head] != new_state_dict[head]:
-                    logging.debug('%s: %s -> %s' % (head, initial_state_dict[head].encode("hex"), new_state_dict[head].encode("hex")))
+                    logging.debug('%s: %s -> %s' % (head, binascii.hexlify(initial_state_dict[head]), binascii.hexlify(new_state_dict[head])))
                     new_stuff = True
 
             if new_stuff:

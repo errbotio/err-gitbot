@@ -3,7 +3,7 @@ import binascii
 import logging
 from datetime import datetime
 from config import CHATROOM_PRESENCE
-from errbot.utils import human_name_for_git_url
+from errbot.repo_manager import human_name_for_git_url
 
 POLLING_TIME = 600
 
@@ -15,7 +15,7 @@ import shutil
 
 
 class GitBot(BotPlugin):
-    min_err_version = '1.7.0'
+    min_err_version = '4.0.0'
 
     def git_poller(self):
         logging.debug('Poll the git repos')
@@ -45,12 +45,12 @@ class GitBot(BotPlugin):
             self[human_name] = [(head, sha) for head, sha in new_state_dict.items() if head in initial_state_dict]
         if history_msgs:
             if CHATROOM_PRESENCE:
-                room = CHATROOM_PRESENCE[0]
-                self.send(room, '/me is about to give you the latest git repo news ...', message_type='groupchat')
+                room = self.query_room(CHATROOM_PRESENCE[0])
+                self.send(room, '/me is about to give you the latest git repo news ...')
                 for repo, changes in history_msgs.iteritems():
                     msg = ('%s:\n' % repo) + changes
                     logging.debug('Send:\n%s' % msg)
-                    self.send(room, msg, message_type='groupchat')
+                    self.send(room, msg)
 
     def activate(self):
         self.start_poller(POLLING_TIME, self.git_poller)

@@ -110,17 +110,8 @@ class GitBot(BotPlugin):
         heads = repo.heads
         result = {}
         for head_name, previous_commit in previous_heads_revisions:
-            commit_list = []
-            parent_commits = [heads[head_name].commit,]
-
-            while previous_commit not in (commit.binsha for commit in parent_commits):
-                new_parents = []
-                for commit in parent_commits:
-                    commit_list.append(commit)
-                    if commit.parents:
-                        new_parents.extend(commit.parents)
-                parent_commits = new_parents
-
+            revs = '%s..%s' % (previous_commit.hex(), heads[head_name].commit.hexsha)
+            commit_list = list(repo.iter_commits(revs))
             result[head_name] = commit_list
         logging.debug('%s, found this history_since_rev %s' % (human_name, result))
         return result

@@ -13,7 +13,7 @@ pip install gitpython
 If you have the admin rights on an err chatbot simply use:
 
 ```
-!repos install err-gitbot
+!repos install errbotio/err-gitbot
 ```
 
 in order to install the plugin.

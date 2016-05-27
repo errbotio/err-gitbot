@@ -1,6 +1,6 @@
 # err-gitbot plugin a that watchs your git repositories.
 
-For more information about err you can find it here: https://github.com/gbin/err
+For more information about err you can find it here: https://github.com/errbotio/errbot
 
 ## Installation
 

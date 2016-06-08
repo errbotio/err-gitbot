@@ -47,7 +47,7 @@ class GitBot(BotPlugin):
             if CHATROOM_PRESENCE:
                 room = self.query_room(CHATROOM_PRESENCE[0])
                 self.send(room, '/me is about to give you the latest git repo news ...')
-                for repo, changes in history_msgs.iteritems():
+                for repo, changes in history_msgs.items():
                     msg = ('%s:\n' % repo) + changes
                     logging.debug('Send:\n%s' % msg)
                     self.send(room, msg)
@@ -150,7 +150,7 @@ class GitBot(BotPlugin):
         result = ''
         installed_plugin_repos = self.get_installed_plugin_repos()
         if git_name == 'allplugins':
-            for url in [url for _, url in installed_plugin_repos.iteritems()]:
+            for url in [url for _, url in installed_plugin_repos.items()]:
                 result = self._git_follow_url(url, None)  # follow everything
             return result
         elif git_name in installed_plugin_repos:

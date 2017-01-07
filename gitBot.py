@@ -139,7 +139,7 @@ class GitBot(BotPlugin):
             return 'You need at least a parameter'
         git_name = args[0]
         result = ''
-        installed_plugin_repos = self.get_installed_plugin_repos()
+        installed_plugin_repos = self._bot.repo_manager.get_installed_plugin_repos()
         if git_name == 'allplugins':
             for url in [url for _, url in installed_plugin_repos.items()]:
                 result = self._git_follow_url(url, None)  # follow everything
